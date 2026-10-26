@@ -30,3 +30,4 @@ CareerVault is a full-stack job application tracker that helps users organize an
 ## Development Approach
 
 CareerVault will be built incrementally. The first version will focus on the core job-tracking features and reliable data storage. Authentication, automated job importing, historical job archives, and AI features will be added later.
+<img width="1526" height="780" alt="image" src="https://github.com/user-attachments/assets/878f0521-10fb-46e6-8fd3-293b0af1d8a1" />
