@@ -1,4 +1,5 @@
 using CareerVault.Api.DTOs;
+using CareerVault.Api.Hosting;
 using CareerVault.Api.Services.JobExtraction;
 
 namespace CareerVault.Api.Endpoints;
@@ -11,7 +12,9 @@ public static class JobExtractionEndpoints
     {
         app.MapPost("/api/jobs/extract", ExtractAsync)
             // Logged-in users only, like the rest of /api/jobs.
-            .RequireAuthorization();
+            .RequireAuthorization()
+            // Each request makes the server fetch a web page: limited per user.
+            .RequireRateLimiting(RateLimiting.Extraction);
 
         return app;
     }

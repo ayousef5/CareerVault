@@ -2,10 +2,14 @@
 // Services/, database access in Data/.
 using CareerVault.Api.Data;
 using CareerVault.Api.Endpoints;
+using CareerVault.Api.Hosting;
 using CareerVault.Api.Identity;
 using CareerVault.Api.Services.JobExtraction;
 using CareerVault.Api.Services.Jobs;
 using CareerVault.Api.Services.Resumes;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +29,32 @@ builder.Services
 
 // Allow the API to check user permissions.
 builder.Services.AddAuthorization();
+
+// The keys that sign login tokens (ASP.NET Data Protection). In Azure they're
+// kept in a private blob ("DataProtection:BlobUri"), so logins survive
+// container restarts and work across replicas. Without that setting (local
+// development, tests) they're kept on this machine as before.
+var dataProtection = builder.Services.AddDataProtection().SetApplicationName("CareerVault");
+if (Uri.TryCreate(builder.Configuration["DataProtection:BlobUri"], UriKind.Absolute, out var keysBlobUri))
+{
+    dataProtection.PersistKeysToAzureBlobStorage(keysBlobUri, AzureCredentials.Create(builder.Configuration));
+}
+
+// Health checks for Azure's probes: /health (the app is running) and
+// /health/ready (it can also reach PostgreSQL).
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<CareerVaultDbContext>("database", tags: ["ready"]);
+
+// Limits on login, job-posting reading and resume uploads (see Hosting/RateLimiting.cs).
+builder.Services.AddCareerVaultRateLimiting(builder.Configuration);
+
+// Trust X-Forwarded-For / -Proto only from Azure's ingress proxy
+// (see Hosting/ForwardedHeadersSetup.cs).
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    ForwardedHeadersSetup.Configure(options, builder.Configuration));
+
+// Error responses in the standard "problem details" format (no internals).
+builder.Services.AddProblemDetails();
 
 // The rules for job applications (see Services/Jobs).
 builder.Services.AddScoped<JobService>();
@@ -59,16 +89,39 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Registration and login endpoints (ASP.NET Identity) under /api/auth.
-app.MapGroup("/api/auth").MapIdentityApi<ApplicationUser>();
+// Production must have its database, CORS, storage and key settings; stop
+// now with a clear message if any is missing (see Hosting/ProductionChecks.cs).
+if (app.Environment.IsProduction())
+{
+    ProductionChecks.ThrowIfInvalid(app.Configuration);
+}
+
+// First, so everything below sees the real client address and scheme.
+app.UseForwardedHeaders();
+
+if (app.Environment.IsProduction())
+{
+    // Unexpected errors become a plain 500 problem response.
+    app.UseExceptionHandler();
+    // Azure's ingress serves HTTPS only; HSTS tells browsers to stay on it.
+    app.UseHsts();
+}
+else
+{
+    app.UseHttpsRedirection();
+}
+
+// Registration and login endpoints (ASP.NET Identity) under /api/auth,
+// rate limited per client address.
+app.MapGroup("/api/auth")
+    .RequireRateLimiting(RateLimiting.Auth)
+    .MapIdentityApi<ApplicationUser>();
 
 // Make API documentation available during development.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseHttpsRedirection();
 
 // Apply the CORS policy. This must come before the endpoints are mapped below.
 app.UseCors(FrontendCorsPolicy);
@@ -78,6 +131,13 @@ app.UseAuthentication();
 
 // Check whether that user has permission.
 app.UseAuthorization();
+
+// After authentication, so uploads and extraction are limited per user.
+app.UseRateLimiter();
+
+// Health probes (no login needed; they only answer "Healthy" or "Unhealthy").
+app.MapHealthChecks("/health", new HealthCheckOptions { Predicate = _ => false });
+app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = check => check.Tags.Contains("ready") });
 
 // /api/jobs, including uploading a job's resume (see Endpoints/JobEndpoints.cs).
 var resumeOptions = app.Services.GetRequiredService<ResumeOptions>();

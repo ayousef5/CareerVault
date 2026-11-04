@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CareerVault.Api.DTOs;
+using CareerVault.Api.Hosting;
 using CareerVault.Api.Identity;
 using CareerVault.Api.Services.Jobs;
 using CareerVault.Api.Services.Resumes;
@@ -33,7 +34,9 @@ public static class JobEndpoints
         jobs.MapPut("/{id:int}/resume", AttachResumeAsync)
             // Antiforgery protects cookie logins; this API uses bearer tokens.
             .DisableAntiforgery()
-            .WithMetadata(new RequestSizeLimitAttribute(resumeOptions.MaxFileBytes + FormOverheadBytes));
+            .WithMetadata(new RequestSizeLimitAttribute(resumeOptions.MaxFileBytes + FormOverheadBytes))
+            // Uploads are limited per user.
+            .RequireRateLimiting(RateLimiting.Uploads);
         jobs.MapDelete("/{id:int}/resume", RemoveResumeAsync);
 
         return app;

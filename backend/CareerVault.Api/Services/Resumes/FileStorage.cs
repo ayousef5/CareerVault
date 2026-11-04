@@ -1,10 +1,9 @@
-using System.Text.RegularExpressions;
-
 namespace CareerVault.Api.Services.Resumes;
 
 // Where uploaded files are kept. The rest of the app only knows "save a
-// file, get a key back"; where the bytes live (a local folder now, Azure
-// Blob Storage later) is up to the implementation.
+// file, get a key back"; where the bytes live (a local folder in
+// development, Azure Blob Storage in production) is up to the implementation.
+// Keys always have the StorageKeys format.
 public interface IFileStorage
 {
     // Stores the content as a new file for this owner and returns its key.
@@ -27,17 +26,14 @@ public sealed class LocalFileStorageOptions
 }
 
 // Keeps files on the local disk, at {RootPath}/{ownerId}/{random id}.
-// Meant for development; production would use cloud storage.
-public sealed partial class LocalFileStorage(LocalFileStorageOptions options) : IFileStorage
+// Meant for development; production uses AzureBlobFileStorage.
+public sealed class LocalFileStorage(LocalFileStorageOptions options) : IFileStorage
 {
     private readonly string _root = Path.GetFullPath(options.RootPath);
 
     public async Task<string> SaveAsync(string ownerId, Stream content, CancellationToken cancellationToken)
     {
-        if (!OwnerId().IsMatch(ownerId))
-            throw new ArgumentException("Invalid owner id.", nameof(ownerId));
-
-        var key = $"{ownerId}/{Guid.NewGuid():N}";
+        var key = StorageKeys.New(ownerId);
         var path = PathFor(key);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
@@ -84,21 +80,12 @@ public sealed partial class LocalFileStorage(LocalFileStorageOptions options) : 
     // outside the folder ("../", absolute paths, etc.).
     private string PathFor(string key)
     {
-        var match = StorageKey().Match(key);
-        if (!match.Success)
-            throw new ArgumentException("Invalid storage key.", nameof(key));
+        var (owner, file) = StorageKeys.Parse(key);
 
-        var path = Path.GetFullPath(Path.Combine(_root, match.Groups["owner"].Value, match.Groups["file"].Value));
+        var path = Path.GetFullPath(Path.Combine(_root, owner, file));
         if (!path.StartsWith(_root + Path.DirectorySeparatorChar, StringComparison.Ordinal))
             throw new ArgumentException("Invalid storage key.", nameof(key));
 
         return path;
     }
-
-    // ASP.NET Identity user ids are GUIDs.
-    [GeneratedRegex(@"^[A-Za-z0-9-]{1,64}$")]
-    private static partial Regex OwnerId();
-
-    [GeneratedRegex(@"^(?<owner>[A-Za-z0-9-]{1,64})/(?<file>[a-f0-9]{32})$")]
-    private static partial Regex StorageKey();
 }

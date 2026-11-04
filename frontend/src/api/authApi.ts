@@ -6,6 +6,9 @@ import { API_BASE_URL } from './config.ts'
 const AUTH_URL = `${API_BASE_URL}/api/auth`
 const TOKEN_KEY = 'accessToken'
 
+// Shown when the API's rate limit refuses another attempt (HTTP 429).
+export const TOO_MANY_ATTEMPTS = 'Too many attempts. Please wait a minute and try again.'
+
 // The current login token, or null when logged out.
 export function getToken(): string | null {
   return sessionStorage.getItem(TOKEN_KEY)
@@ -21,6 +24,9 @@ export async function register(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   })
 
+  if (response.status === 429) {
+    throw new Error(TOO_MANY_ATTEMPTS)
+  }
   if (!response.ok) {
     throw new Error('Registration failed. Check your information.')
   }
@@ -36,11 +42,14 @@ export async function login(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   })
 
+  if (response.status === 429) {
+    throw new Error(TOO_MANY_ATTEMPTS)
+  }
   if (!response.ok) {
     throw new Error('Login failed. Check your email and password.')
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as { accessToken: string }
 
   sessionStorage.setItem(TOKEN_KEY, data.accessToken)
 }

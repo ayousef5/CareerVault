@@ -24,6 +24,13 @@ public class CareerVaultApiFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Testing");
 
+        // Tests register and log in many users from one test client, so the
+        // normal per-minute limits would get in the way. (RateLimitingTests
+        // checks the limits themselves.)
+        builder.UseSetting("RateLimiting:AuthPerMinute", "100000");
+        builder.UseSetting("RateLimiting:ExtractionPerMinute", "100000");
+        builder.UseSetting("RateLimiting:UploadsPerMinute", "100000");
+
         builder.ConfigureServices(services =>
         {
             // Remove the PostgreSQL setup from Program.cs...

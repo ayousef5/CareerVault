@@ -74,10 +74,13 @@ CareerVault/
 │  │  ├─ Models/              Database entities (JobApplication, ResumeVersion, StoredFile)
 │  │  ├─ Identity/            The user account type and claim helpers
 │  │  ├─ Data/                EF Core DbContext
+│  │  ├─ Hosting/             Production setup (rate limits, proxy headers, startup checks)
 │  │  ├─ Validation/          Shared rules (what counts as an empty job)
 │  │  └─ Migrations/          EF Core database migrations (never edit by hand once applied)
-│  └─ CareerVault.Api.Tests/  xUnit tests (API endpoints, extraction, URL safety, resumes)
+│  ├─ CareerVault.Api.Tests/  xUnit tests (API endpoints, extraction, URL safety, resumes, hosting)
+│  └─ Dockerfile              The API's production container image
 ├─ docs/ARCHITECTURE.md       How the pieces fit together, with diagrams
+├─ docs/DEPLOYMENT.md         Deploying to Azure (Container Apps, PostgreSQL, Blob Storage)
 └─ CONTRIBUTING.md            Development workflow and conventions
 ```
 
@@ -250,6 +253,10 @@ already been applied to a shared database; add a new one instead.
 | `JobExtraction:MaxRedirects` / `MaxResponseBytes` / `Timeout` | appsettings or env vars `JobExtraction__…` | `5` / `3145728` (3 MB) / `00:00:10` |
 | `ResumeStorage:RootPath` | appsettings or env var `ResumeStorage__RootPath` | `App_Data/resumes` in the API project |
 | `Resumes:MaxFileBytes` | appsettings or env var `Resumes__MaxFileBytes` | `10485760` (10 MB) |
+| `ResumeStorage:Provider` / `BlobServiceUri` / `ContainerName` | env vars `ResumeStorage__…` | `Local` in development, `AzureBlob` in production |
+| `DataProtection:BlobUri` | env var `DataProtection__BlobUri` | Not set (keys kept locally); required in production |
+| `RateLimiting:AuthPerMinute` / `ExtractionPerMinute` / `UploadsPerMinute` | env vars `RateLimiting__…` | `10` / `30` / `10` |
+| `VITE_API_BASE_URL` (frontend, build time) | build environment or `frontend/.env.production.local` | `http://localhost:5231` |
 | API address used by the frontend | `frontend/src/api/config.ts` (`API_BASE_URL`) | `http://localhost:5231` |
 
 Keep passwords out of committed files: use
@@ -257,10 +264,17 @@ Keep passwords out of committed files: use
 in `backend/CareerVault.Api`, or environment variables. `.env` files are
 git-ignored.
 
+## Deployment
+
+The API runs as a container (`backend/Dockerfile`) on Azure Container Apps,
+with Azure Database for PostgreSQL and private Azure Blob Storage for resumes;
+the frontend is on Azure Static Web Apps. Health probes: `/health` and
+`/health/ready`. Production refuses to start if a required setting is
+missing, and logs are JSON. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for
+step-by-step setup, settings, permissions, migrations and GitHub Actions.
+
 ## Roadmap
 
-Ideas for later versions: refresh tokens (stay logged in longer), deployment to
-Azure (with resumes in Azure Blob Storage behind the same `IFileStorage`
-interface), more site-specific extractors (Lever, Ashby…) once they've been
+Ideas for later versions: refresh tokens (stay logged in longer), more site-specific extractors (Lever, Ashby…) once they've been
 tested, historical job archives, and AI-powered skill extraction and
 hiring-trend analysis.
