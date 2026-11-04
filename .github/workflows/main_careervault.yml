@@ -1,53 +1,60 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+# Build and deploy CareerVault ASP.NET Core API to Azure App Service
 
 name: Build and deploy ASP.Net Core app to Azure Web App - careervault
 
 on:
   push:
     branches:
-      - 'main'
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      # Build only the ASP.NET Core backend project
+      - name: Build backend
+        run: dotnet build backend/CareerVault.Api/CareerVault.Api.csproj --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      # Publish the backend into a deployment folder
+      - name: Publish backend
+        run: dotnet publish backend/CareerVault.Api/CareerVault.Api.csproj --configuration Release --output "${{ runner.temp }}/careervault-publish"
 
-      - name: Upload artifact for deployment job
+      # Save the published files for the deployment job
+      - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{ runner.temp }}/careervault-publish
 
   deploy:
     runs-on: windows-latest
     needs: build
+
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download deployment artifact
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+          path: ./publish
+
+      # Authenticate using Azure federated identity
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -55,11 +62,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1A49A9803243468B98394E0D551934C4 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4077EAD27DE34CA48E65CEA8A91D764D }}
 
+      # Deploy the published backend to Azure App Service
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'careervault'
-          slot-name: 'Production'
-          package: .
-          
+          app-name: careervault
+          slot-name: Production
+          package: ./publish
