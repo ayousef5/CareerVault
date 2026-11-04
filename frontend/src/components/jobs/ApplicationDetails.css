@@ -1,0 +1,208 @@
+/* ---------- Application details dialog ---------- */
+
+/* The dialog itself fills the screen invisibly; the panel inside is the
+   visible box, so clicks outside the panel land on the dialog (= close). */
+.details-dialog {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 24px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details-dialog:not([open]) {
+  display: none;
+}
+
+.details-dialog::backdrop {
+  background: rgba(17, 24, 39, 0.45);
+}
+
+.details-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 760px;
+  max-height: 100%;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(16, 24, 40, 0.2);
+  overflow: hidden;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.details-header h2 {
+  font-size: 20px;
+}
+
+.details-company {
+  margin-top: 2px;
+  color: var(--text-muted);
+}
+
+.details-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.details-close {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.details-close:hover {
+  background: var(--bg);
+  color: var(--text-heading);
+}
+
+/* Everything between the header and footer scrolls, so a long
+   description is never cut off. */
+.details-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+
+.details-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px 20px;
+  margin: 0 0 20px;
+}
+
+.details-fact dt {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.details-fact dd {
+  margin: 2px 0 0;
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.details-fact-wide {
+  grid-column: 1 / -1;
+}
+
+.details-fact a {
+  color: var(--accent);
+}
+
+.details-missing {
+  color: #9aa1ac;
+  font-style: italic;
+}
+
+.details-section {
+  margin-top: 20px;
+}
+
+.details-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.details-section h3 {
+  font-size: 14px;
+  color: var(--text-heading);
+}
+
+.details-save-status {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Long text keeps its paragraphs and line breaks. */
+.details-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  color: var(--text-heading);
+}
+
+.details-description {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.details-editor textarea {
+  width: 100%;
+  min-height: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.details-editor-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.details-button {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-heading);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.details-button:hover {
+  background: var(--bg);
+}
+
+.details-button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.details-button.primary:hover {
+  background: var(--accent-hover);
+}
+
+.details-footer {
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 560px) {
+  .details-dialog {
+    padding: 8px;
+  }
+}

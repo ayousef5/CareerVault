@@ -1,0 +1,246 @@
+/* ---------- Resume Library page ---------- */
+
+.resume-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ----- Buttons ----- */
+.resume-button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-heading);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.resume-button:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.resume-button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.resume-button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.resume-button.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.resume-button.danger {
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.resume-button.danger:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+/* ----- Messages ----- */
+.resume-notice {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.resume-notice.success {
+  color: #047857;
+}
+
+.resume-notice.error {
+  color: #b91c1c;
+}
+
+.resume-empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.resume-empty.error {
+  color: #b91c1c;
+}
+
+/* ----- Files table: one row per unique file ----- */
+.resume-table-wrapper {
+  overflow-x: auto;
+}
+
+.resume-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.resume-table th,
+.resume-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.resume-table th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: #fafbfc;
+}
+
+.resume-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.resume-file-name {
+  max-width: 260px;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+  color: var(--text-heading);
+}
+
+.resume-nowrap {
+  white-space: nowrap;
+}
+
+/* Every company and role using the file. */
+.resume-applications {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resume-applications li + li {
+  margin-top: 2px;
+}
+
+.resume-not-attached {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.resume-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* ----- Preview dialog ----- */
+.resume-preview-dialog {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 24px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resume-preview-dialog:not([open]) {
+  display: none;
+}
+
+.resume-preview-dialog::backdrop {
+  background: rgba(17, 24, 39, 0.45);
+}
+
+.resume-preview-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 960px;
+  height: 100%;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(16, 24, 40, 0.2);
+  overflow: hidden;
+}
+
+.resume-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.resume-preview-header h2 {
+  font-size: 16px;
+}
+
+.resume-preview-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.resume-preview-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.resume-preview-body {
+  flex: 1;
+  min-height: 0;
+  background: #f1f3f6;
+}
+
+.resume-preview-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Word preview: a short note above the frame showing the pages. */
+.docx-preview-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.docx-preview-note {
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.docx-preview-layout .resume-preview-frame {
+  flex: 1;
+  min-height: 0;
+}
+
+.resume-preview-message {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.resume-preview-message.error {
+  color: #b91c1c;
+}
+
+@media (max-width: 560px) {
+  .resume-preview-dialog {
+    padding: 8px;
+  }
+}

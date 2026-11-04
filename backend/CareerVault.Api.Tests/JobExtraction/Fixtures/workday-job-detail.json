@@ -1,0 +1,19 @@
+{
+  "jobPostingInfo": {
+    "id": "abc123",
+    "title": "Platform Engineer Intern",
+    "jobDescription": "<p><b>Build the platform.</b></p><p></p><p><b>What you will do</b></p><ul><li>Write services</li><li>Review code</li></ul><p>Base Pay Range: $95,000 USD - $120,000 USD</p>",
+    "location": "USA, WA, Seattle",
+    "postedOn": "Posted 3 Days Ago",
+    "timeType": "Full Time",
+    "jobReqId": "R-12345",
+    "jobPostingId": "Platform-Engineer-Intern_R-12345",
+    "jobRequisitionLocation": { "descriptor": "USA, WA, Seattle", "country": { "descriptor": "United States of America", "alpha2Code": "US" } },
+    "additionalLocations": ["USA, CA, San Francisco"],
+    "remoteType": "Flex",
+    "externalUrl": "https://contoso.wd1.myworkdayjobs.com/Contoso_Careers/job/USA-WA-Seattle/Platform-Engineer-Intern_R-12345"
+  },
+  "hiringOrganization": { "name": "", "url": "" },
+  "similarJobs": [],
+  "userAuthenticated": false
+}

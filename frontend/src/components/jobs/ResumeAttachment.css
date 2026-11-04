@@ -1,0 +1,35 @@
+/* ---------- An application's resume (Resume dialog and View App) ---------- */
+
+.resume-attached {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.resume-attached-name {
+  font-weight: 600;
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.resume-attached-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.resume-attached-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.resume-attachment-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.resume-attachment .resume-notice {
+  margin-top: 8px;
+}

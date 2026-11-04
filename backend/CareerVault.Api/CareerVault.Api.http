@@ -1,0 +1,45 @@
+# Example requests for the CareerVault API (VS Code REST Client / Rider /
+# Visual Studio). Log in first, then paste the accessToken below.
+@host = http://localhost:5231
+@token = paste-your-access-token-here
+
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "you@example.com", "password": "Your-Passw0rd!" }
+
+### Log in (returns accessToken)
+POST {{host}}/api/auth/login?useCookies=false
+Content-Type: application/json
+
+{ "email": "you@example.com", "password": "Your-Passw0rd!" }
+
+### List your jobs
+GET {{host}}/api/jobs
+Authorization: Bearer {{token}}
+
+### Create a job
+POST {{host}}/api/jobs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "companyName": "Acme", "jobTitle": "Software Engineer", "status": "Applied" }
+
+### Update job 1
+PUT {{host}}/api/jobs/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "companyName": "Acme", "jobTitle": "Senior Software Engineer", "status": "Interviewing" }
+
+### Delete job 1
+DELETE {{host}}/api/jobs/1
+Authorization: Bearer {{token}}
+
+### Read job details from a posting link (saves nothing)
+POST {{host}}/api/jobs/extract
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "url": "https://example.com/careers/software-engineer" }

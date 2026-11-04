@@ -1,0 +1,44 @@
+# ---------- Dependencies ----------
+node_modules/
+
+# ---------- Build output ----------
+dist/
+dist-ssr/
+bin/
+obj/
+*.tsbuildinfo
+coverage/
+TestResults/
+
+# ---------- Uploaded files (local development storage) ----------
+# Users' resumes are personal data; never commit them.
+App_Data/
+
+# ---------- Secrets and local settings ----------
+# Real secrets belong in `dotnet user-secrets` or environment variables.
+.env
+.env.*
+!.env.example
+*.local
+appsettings.*.local.json
+appsettings.Development.json
+*.pfx
+*.pem
+
+# ---------- Logs ----------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- IDEs and OS files ----------
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.user
+*.suo
+*.swp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,74 @@
+/* ---------- Colour and font variables used across the app ---------- */
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --border: #e3e5e8;
+  --text: #4b5563;
+  --text-heading: #111827;
+  --text-muted: #6b7280;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: #eff4ff;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Basic reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
+/* Form controls inherit the page font instead of the browser default. */
+button,
+input {
+  font: inherit;
+}
+
+/* Shared by the grid and the details dialog. */
+/* ---------- Status badges ---------- */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The badge-style Status dropdown in the grid is smaller. */
+.cell-select.status-badge {
+  padding: 1px 6px;
+  font-size: 12px;
+}
+
+.status-not-applied  { background: #f3f4f6; color: #4b5563; }
+.status-applied      { background: #eff4ff; color: #1d4ed8; }
+.status-interviewing { background: #fef6e7; color: #b45309; }
+.status-offer        { background: #ecfdf3; color: #047857; }
+.status-rejected     { background: #fef2f2; color: #b91c1c; }
+
